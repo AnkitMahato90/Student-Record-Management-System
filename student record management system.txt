@@ -1,0 +1,299 @@
+#include <iostream>
+#include<fstream>
+#include<string.h>
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<cstdlib>
+using namespace std;
+
+void intro()
+{
+    system("color a");
+    cout<<"\n\n\n\tWelcome to Student Record Management System Project"<<endl<<endl;
+    cout<<"\t==================================="<<endl;
+    cout<<"\tmade by ANKIT MAHATO"<<endl;
+    cout<<"\t==================================="<<endl<<endl;
+    cout<<"\tNAME          : ANKIT MAHATO"<<endl;
+    cout<<"\tCOURSE        : BCA"<<endl;
+    cout<<"\tSECTION       : B"<<endl;
+    cout<<"\tENROLLMENT NO : AJU/210688"<<endl;
+    cout<<"\tROLL NO       : 90"<<endl<<endl;
+    cout<<"\t.... press any key to continue .....\n";
+    cin.get();
+}
+void login()
+{
+    system("color f");
+    x:
+    system("cls");
+    string username;
+    string password;
+    int ch;
+    cout<<"\n\n\t\t******** LOGIN REQUIRE ***********";
+    cout<<"\n\n\t\tPlease input username : ";
+    cin>>username;
+    cout<<"\n\t\tPlease input password : ";
+    ch=getch();
+    while(ch!=13)
+    {
+        password.push_back(ch);
+        cout<<'x';
+        ch=getch();
+    }
+
+    if(username == "Aju210688" && password =="Ankit7255")
+    {
+            cout<<"\n\n\t\t**********************************"<<endl<<endl;
+            cout<<"\n\n\t\tCongratulation login sucessfull !!!\n\n";
+            cout<<"\n\n\t....... Press any key to continue .............";
+            getch();
+        }
+    else{
+        cout<<"\n\n\t\t**********************************"<<endl<<endl;
+        cout<<"\n\n\t\tINVALID USERNAME or PASSWORD !!!";
+        cout<<"\n\n\t\t............TRY AGAIN............";
+        getch();
+        goto x;
+    }
+}
+
+class Student
+{
+    private:
+       char name[30],enroll[20],address[40],email_id[30],course[20];
+       int roll_no;
+       long long int contact_no;
+    public:
+        Student()
+        {
+            strcpy(name,"no name");
+            strcpy(enroll,"no enroll");
+            strcpy(address,"no address");
+            strcpy(email_id,"no email_id");
+            strcpy(course,"no course");
+            roll_no=0;
+            contact_no=0;
+
+        }
+        void getStudentdata()
+        {
+            system("color f");
+    cout<<"\n\t\tENTER YOUR FULL NAME :";
+    scanf(" %29[^\n]",name);
+    cout<<"\n\t\tENTER YOUR ENROLLMENT NUMBER : ";
+    scanf(" %19[^\n]",enroll);
+    cout<<"\n\t\tENTER YOUR ROLL NUMBER :";
+    cin>>roll_no;
+    cout<<"\n\t\tENTER YOUR ADDRESS :";
+    scanf(" %39[^\n]",address);
+    cout<<"\n\t\tENTER YOUR EMAIL_ID :";
+    scanf(" %29[^\n]",email_id);
+    cout<<"\n\t\tENTER YOUR CONTACT_NO :";
+    cin>>contact_no;
+    cout<<"\n\t\tENTER YOUR COURSE :";
+    scanf(" %19[^\n]",course);
+
+}
+    void showStudentdata()
+    {
+        system("color a");
+        cout<<"\n\t\tSTUDENT NAME :"<<name<<endl<<endl;
+        cout<<"\t\tSTUDENT ENROLLMENT NUMBER :"<<enroll<<endl<<endl;
+        cout<<"\t\tSTUDENT ROLL NUMBER :"<<roll_no<<endl<<endl;
+        cout<<"\t\tSTUDENT ADDRESS :"<<address<<endl<<endl;
+        cout<<"\t\tSTUDENT COURSE :"<<course<<endl<<endl;
+        cout<<"\t\tSTUDENT EMAIL_ID :"<<email_id<<endl<<endl;
+        cout<<"\t\tSTUDENT CONTACT_NO :"<<contact_no<<endl<<endl;
+        cout<<"\t\t******************************************"<<endl<<endl;
+    }
+    int storeStudent();
+    void viewAllStudents();
+    void searchStudent(char *);
+    void deleteStudent(char *);
+    void updateStudent(char *);
+};
+void Student::updateStudent(char *t)
+{
+    fstream file;
+    file.open("file1.dat",ios::in|ios::out|ios::ate|ios::binary);
+    file.seekg(0);
+    file.read((char *)this,sizeof(*this));
+    while(!file.eof()){
+        if(!strcmp(t,enroll)){
+            cout<<"\n\n\t\tPrevious Record:-\n\n";
+            showStudentdata();
+            cout<<"\n\n\t\tEnter New Record to Update:-\n\n";
+            getStudentdata();
+            file.seekp(file.tellp()-sizeof(*this));
+            file.write((char *)this,sizeof(*this));
+        }
+        file.read((char *)this,sizeof(*this));
+    }
+    file.close();
+}
+void Student::deleteStudent(char *t)
+{
+    ifstream fin;
+    ofstream fout;
+    fin.open("file1.dat",ios::in|ios::binary);
+    if(!fin)
+        cout<<"\nfile not found.........";
+    else{
+        fout.open("tempfile.dat",ios::out|ios::binary);
+        fin.read((char*)this,sizeof(*this));
+        while(!fin.eof()){
+            if(strcmp(enroll,t))
+                fout.write((char*)this,sizeof(*this));
+            fin.read((char*)this,sizeof(*this));
+        }
+        fin.close();
+        fout.close();
+        remove("file1.dat");
+        rename("tempfile.dat","file1.dat");
+    }
+}
+void Student::searchStudent(char *t)
+{
+    int counter=0;
+    ifstream fin;
+    fin.open("file1.dat",ios::in|ios::binary);
+    if(!fin)
+        cout<<"\nFile not found.........";
+    else{
+        fin.read((char*)this,sizeof(*this));
+        while(!fin.eof()){
+            if(!strcmp(t,this->enroll)){
+                 showStudentdata();
+                 counter++;
+            }
+            fin.read((char*)this,sizeof(*this));
+            }
+            if(counter==0)
+                cout<<"\n\t\tRecord not found.........";
+            fin.close();
+        }
+}
+void Student::viewAllStudents()
+{
+   ifstream fin;
+    fin.open("file1.dat",ios::in|ios::binary);
+    if(!fin)
+        cout<<"\n\tFile not found.......";
+    else{
+            fin.read((char*)this,sizeof(*this));
+        while(!fin.eof()){
+                showStudentdata();
+                fin.read((char*)this,sizeof(*this));
+        }
+        fin.close();
+    }
+}
+int Student::storeStudent()
+{
+   if(roll_no==0&&contact_no==0)
+   {
+       cout<<"Student data not initialized";
+       return(0);
+   }
+   else{
+    ofstream fout;
+    fout.open("file1.dat",ios::app|ios::binary);
+    fout.write((char*)this,sizeof(*this));
+    fout.close();
+    return(1);
+   }
+}
+int menu()
+{
+    char choice;
+    system("cls");
+    system("color b");
+    cout<<"\t\t------------------------------------"<<endl;
+    cout<<"\t\t|          MAIN MENU               |"<<endl;
+    cout<<"\t\t------------------------------------";
+  cout<<"\n\t\t|                                  |";
+  cout<<"\n\t\t| 1. Insert Student Record         |";
+  cout<<"\n\t\t| 2. View All Student Record       |";
+  cout<<"\n\t\t| 3. Search Student Record         |";
+  cout<<"\n\t\t| 4. Delete Student Record         |";
+  cout<<"\n\t\t| 5. Update Student Record         |";
+  cout<<"\n\t\t| 6. Exit                          |";
+  cout<<"\n\t\t|                                  |";
+  cout<<"\n\t\t------------------------------------" << endl<<endl<<endl;
+   cout << "\t\t......................................" << endl;
+   cout << "\t\tChoose Options:[1 - 2 - 3 - 4 - 5 - 6]" << endl;
+   cout << "\t\t......................................" << endl<<endl<<endl;
+   cout << "\t\tEnter Your Choice: ";
+    cin>>choice;
+    return(choice);
+}
+int main()
+{
+    intro();
+    login();
+    Student s1;
+    char enroll[20];
+    while(1){
+        system("cls");
+        switch(menu())
+        {
+        case '1':
+            cout<<endl<<endl;
+            cout<<"\t\t********** CREATE NEW RECORD **************\n\n";
+            s1.getStudentdata();
+            s1.storeStudent();
+            cout<<"\n\n\t\tRecord inserted.......";
+            cout<<"\n\n\t....... Press any key to continue ................";
+            break;
+        case '2':
+            cout<<endl<<endl;
+            cout<<"\t\t********** All STUDENT DETAIL *************\n\n";
+            s1.viewAllStudents();
+            cout<<"\n\n\t....... Press any key to continue ................";
+            break;
+        case '3':
+            system("color e");
+            cout<<endl<<endl;
+            cout<<"\n\t\tEnter enrollment of student to search : ";
+            cin.ignore();
+            cin.getline(enroll,20);
+            cout<<endl<<endl;
+            cout<<"\t\t********** RECORD AFTER SEARCHED **********\n\n";
+            s1.searchStudent(enroll);
+            cout<<"\n\n\t....... Press any key to continue ................";
+            break;
+        case '4':
+            system("color e");
+            cout<<"\n\t\tEnter enrollment of student to delete record : ";
+            cin.ignore();
+            cin.getline(enroll,20);
+            s1.deleteStudent(enroll);
+            cout<<"\n\t\tRecord Deleted......";
+            cout<<"\n\n\t....... Press any key to continue ...............";
+            break;
+        case '5':
+            system("color f");
+            cout<<"\n\t\tEnter enrollment of student to update record : ";
+            cin.ignore();
+            cin.getline(enroll,20);
+            cout<<"\n\n\t\t************* UPDATE RECORD *************\n\n";
+            s1.updateStudent(enroll);
+            cout<<"\n\t\tRecord Updated.....";
+            cout<<"\n\n\t....... Press any key to continue ................";
+            break;
+        case '6':
+            cout<<"\n\t\tThank you for using this application";
+            system("color 8");
+            cout<<"\n\n\t....... Press any key to exit .......................\n\n";
+            getch();
+            exit(0);
+        default:
+            system("color f");
+            cout<<"\n\n\t\tInvalid choice........";
+            cout<<"\n\n\t....... Press any key to continue .............";
+        }
+        getch();
+    }
+}
+
